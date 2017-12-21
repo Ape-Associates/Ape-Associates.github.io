@@ -15,7 +15,6 @@ export default class App extends Component {
         //TODO: Add banner under HEader
         return (
             <div className="fullscreen">
-                <Header />
                 <Banner />
                 <div className="main">
                     <div className="aa-about">

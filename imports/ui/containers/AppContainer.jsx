@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
-import App from '../layouts/App.jsx';
+import Home from '../layouts/Home.jsx';
 
 export default withTracker(() => {
     return {
@@ -13,4 +13,4 @@ export default withTracker(() => {
         connected: Meteor.status().connected,
         // TODO: add blog posts to tracking
     };
-})(App);
+})(Home);

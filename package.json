@@ -1,0 +1,26 @@
+{
+  "name": "ape-associates-website",
+  "version": "0.1.0",
+  "description": "Home of the Ape Associates",
+  "main": "client/main.js",
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ape-Associates/Ape-Associates.github.io.git"
+  },
+  "author": "Ben Partridge",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ape-Associates/Ape-Associates.github.io/issues"
+  },
+  "homepage": "https://github.com/Ape-Associates/Ape-Associates.github.io#readme"
+}

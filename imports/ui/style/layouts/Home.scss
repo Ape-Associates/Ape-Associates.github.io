@@ -12,11 +12,32 @@
 .main {
   background-color: white;
   margin: auto;
-  width: 55%;
+  width: 60%;
   height: 100%;
-  padding: 0 5rem 0 5rem;
+  padding: 0 4rem 0 4rem;
 
   box-shadow: 12px 0 15px -4px $shadow-colour, -12px 0 8px -4px $shadow-colour;
   border-left: .1rem solid $border-colour;
   border-right: .1rem solid $border-colour;
+}
+
+.aa-about {
+  margin: 2rem 0 2rem 0;
+  border-top: 1px solid $main-page-borders;
+  border-bottom: 1px solid $main-page-borders;
+}
+
+.aa-about .title {
+  text-align: center;
+}
+
+.home-nav-tiles-container {
+  display: flex;
+}
+
+.latest-post {
+  margin: 2rem 0 5rem 0;
+  padding-bottom: 2.5rem;
+  border-top: 1px solid $main-page-borders;
+  border-bottom: 1px solid $main-page-borders;
 }

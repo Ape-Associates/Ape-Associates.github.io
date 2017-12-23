@@ -3,19 +3,25 @@
 @import '{}/imports/ui/style/layouts/Header.scss';
 @import '{}/imports/ui/style/layouts/Home.scss';
 @import '{}/imports/ui/style/layouts/Banner.scss';
+@import '{}/imports/ui/style/components/Navigation-Tile.scss';
 
 html {
   background-color: $primary-background;
   padding: 0;
   margin: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 100%;
   font-size: 62.5%;
-  height: 100%;
 }
 
 body {
   padding: 0;
   margin: 0;
-  height: 100%;
+  min-height: 100%;
   font-family: sans-serif;
 }
 

@@ -1,0 +1,33 @@
+.navigation-tile {
+  display: flex;
+  flex-direction: column;
+
+  height: 20rem;
+  width: 20rem;
+  padding: 2rem;
+
+  margin: auto;
+}
+
+.navigation-tile:first-of-type {
+  margin-left: 0;
+}
+
+.navigation-tile:last-of-type {
+  margin-right: 0;
+}
+
+.navigation-tile-title {
+  margin-bottom: auto;
+  font-size: 3.8rem;
+  font-weight: bold;
+
+  color: $nav-tile-title-text;
+}
+
+.navigation-tile-description {
+  font-size: 1.4rem;
+  padding: .5rem;
+  color: $nav-tile-description-text;
+  background-color: $dark-grey-tint;
+}

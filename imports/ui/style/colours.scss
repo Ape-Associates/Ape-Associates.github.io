@@ -1,14 +1,21 @@
 // Colours
 $sky-blue: rgba(102, 179, 255, 1);
 $off-white: rgba(255, 252, 249, 1);
+$faint-off-white: rgba(255, 252, 249, 0.7);
 $faint-light-grey: rgba(173, 178, 186, 0.8);
 $pale-grey: rgba(240, 240, 240, 1);
 $faint-dark-grey: rgba(170, 173, 175, 0.8);
+$dark-grey-tint: rgba(170, 173, 175, 0.5);
 
 
-// Component colours
+// layout colours
 $header-color: $sky-blue;
 $header-text: $off-white;
+$main-page-borders: $sky-blue;
+
+// component colours
+$nav-tile-title-text: $faint-off-white;
+$nav-tile-description-text: $off-white;
 
 // background-colors
 $shadow-colour: $faint-light-grey;

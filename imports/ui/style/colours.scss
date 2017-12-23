@@ -1,1 +1,16 @@
-$header-color: rgba(102, 179, 255, 1)
+// Colours
+$sky-blue: rgba(102, 179, 255, 1);
+$off-white: rgba(255, 252, 249, 1);
+$faint-light-grey: rgba(173, 178, 186, 0.8);
+$pale-grey: rgba(240, 240, 240, 1);
+$faint-dark-grey: rgba(170, 173, 175, 0.8);
+
+
+// Component colours
+$header-color: $sky-blue;
+$header-text: $off-white;
+
+// background-colors
+$shadow-colour: $faint-light-grey;
+$primary-background: $pale-grey;
+$border-colour: $faint-dark-grey;

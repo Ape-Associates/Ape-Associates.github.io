@@ -1,18 +1,26 @@
 @import '{}/imports/ui/style/colours.scss';
 @import '{}/imports/ui/style/general.scss';
+@import '{}/imports/ui/style/layouts/Header.scss';
 @import '{}/imports/ui/style/layouts/Home.scss';
+@import '{}/imports/ui/style/layouts/Banner.scss';
 
 html {
-  background-color: white;
+  background-color: $primary-background;
   padding: 0;
   margin: 0;
   font-size: 62.5%;
+  height: 100%;
 }
 
 body {
   padding: 0;
   margin: 0;
+  height: 100%;
   font-family: sans-serif;
+}
+
+#render-target {
+  height: 100%;
 }
 
 .fullscreen {
@@ -20,11 +28,4 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.header {
-  display: flex;
-  background-color: $header-color;
-  height: 3.5rem;
-  font-size: 1.4rem;
 }

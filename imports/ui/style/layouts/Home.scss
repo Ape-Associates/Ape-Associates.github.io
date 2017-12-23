@@ -2,9 +2,21 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  height: 95%;
+}
+
+.aa-banner {
+  margin-bottom: -.2rem;
 }
 
 .main {
+  background-color: white;
   margin: auto;
-  width: 50%;
+  width: 55%;
+  height: 100%;
+  padding: 0 5rem 0 5rem;
+
+  box-shadow: 12px 0 15px -4px $shadow-colour, -12px 0 8px -4px $shadow-colour;
+  border-left: .1rem solid $border-colour;
+  border-right: .1rem solid $border-colour;
 }

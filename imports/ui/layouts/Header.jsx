@@ -24,10 +24,18 @@ export default class Header extends Component {
                     <span className="header-text">Blog</span>
                     <span className="header-text">Products</span>
                     <span className="header-text">About</span>
-                    <span className="header-text">contact</span>
+                    <span className="header-text">Contact</span>
                 </div>
                 <div className="social-media">
-                    logos go here
+                    <div className="social-media-icon-container">
+                        <img className="social-media-icon" src="/icons/Twitter_White.png" />
+                    </div>
+                    <div className="social-media-icon-container">
+                        <img className="social-media-icon" src="/icons/Facebook_Logo.png" />
+                    </div>
+                    <div className="social-media-icon-container">
+                        <img className="social-media-icon" src="/icons/Snapchat_Logo.png" />
+                    </div>
                 </div>
             </header>
         );

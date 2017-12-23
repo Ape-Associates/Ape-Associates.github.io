@@ -7,7 +7,7 @@ export default class Banner extends Component {
     render() {
         return(
             <div className="aa-banner">
-                <img src='images/FancySquadCropped.jpg'/>
+                <img src='images/FancySquadCropped.jpg' height='100'/>
             </div>
         );
     }

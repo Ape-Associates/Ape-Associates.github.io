@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+import AccountsUIWrapper from '../components/AccountsUIWrapper.jsx';
+
 // Header of the app with navigation components
 export default class Header extends Component {
 
@@ -16,15 +18,14 @@ export default class Header extends Component {
         return(
             <header className="header">
                 <div className="auth">
-                    <span onClick={this.login.bind(this)} className="header-text">Login</span>
-                    <span onClick={this.register.bind(this)} className="header-text">Register</span>
+                    <AccountsUIWrapper />
                 </div>
                 <div className="nav-links">
-                    <span className="header-text">Home</span>
-                    <span className="header-text">Blog</span>
-                    <span className="header-text">Products</span>
-                    <span className="header-text">About</span>
-                    <span className="header-text">Contact</span>
+                    <div role="Button" className="header-text">Home</div>
+                    <div role="Button" className="header-text">Blog</div>
+                    <div role="Button" className="header-text">Products</div>
+                    <div role="Button" className="header-text">About</div>
+                    <div role="Button" className="header-text">Contact</div>
                 </div>
                 <div className="social-media">
                     <div className="social-media-icon-container">

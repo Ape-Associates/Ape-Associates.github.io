@@ -15,6 +15,7 @@
   font-size: 1.3rem;
   margin-left: 1.5rem;
   color: $header-text;
+  cursor: pointer;
 }
 
 // Navigation groups
@@ -26,10 +27,12 @@
 
 .nav-links {
   margin: auto;
+  display: flex;
 }
 
 .nav-links .header-text {
   margin-left: 5rem;
+  height: 100%;
 }
 
 .social-media {

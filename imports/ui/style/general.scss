@@ -9,3 +9,16 @@
 .small-text {
   font-size: 1rem;
 }
+
+a {
+  text-decoration: inherit;
+  color: inherit;
+}
+
+a:hover,
+a:visited,
+a:link,
+a:active {
+  text-decoration: inherit;
+  color: inherit;
+}

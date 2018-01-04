@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import Header from './Header.jsx';
 import Banner from './Banner.jsx';
 import NavigationTile from '../components/Navigation-Tile.jsx';
 
-// App component - represents the whole app
-export default class App extends Component {
+// Home component - represents the home page
+export default class Home extends Component {
     constructor(props) {
         super(props);
     }
 
 
     renderNavTiles() {
+        console.log('hello world');
         const nav_tiles_props = [
             {
                 'name': 'Blog',
                 'description': 'See our blog posts',
-                'link': '/blogs',
+                'link': '/blog',
                 'bg_image_src': '/images/Blog_Image.jpg'
             },
             {
@@ -39,6 +39,7 @@ export default class App extends Component {
                     key={i}
                     name={tileProps.name}
                     description={tileProps.description}
+                    link={tileProps.link}
                     bg_image_src={tileProps.bg_image_src}
                 />
             )
@@ -47,7 +48,6 @@ export default class App extends Component {
     }
 
     render() {
-        //TODO: Add banner under HEader
         return (
             <div className="aa-home">
                 <Banner />
@@ -70,8 +70,8 @@ export default class App extends Component {
                         <div className="body-text">
                             //Todo: use api to render most previous blog post
                             <p>blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-                            blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
-                            blah blah blah blah blah blah blah blah
+                                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+                                blah blah blah blah blah blah blah blah
                             </p>
                         </div>
                     </div>

@@ -1,8 +1,11 @@
 // Entry point of client application
 import { Meteor } from 'meteor/meteor';
 import { render } from 'react-dom';
-import { renderRoutes } from '../imports/startup/client/routes.jsx';
+
+import AppContainer from '../imports/ui/containers/AppContainer.jsx';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 Meteor.startup(() => {
-    render(renderRoutes(), document.getElementById('render-target'));
+    render(<AppContainer/>, document.getElementById('render-target'));
 });

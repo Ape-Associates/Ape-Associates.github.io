@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 
 import AccountsUIWrapper from '../components/AccountsUIWrapper.jsx';
 
@@ -21,11 +22,11 @@ export default class Header extends Component {
                     <AccountsUIWrapper />
                 </div>
                 <div className="nav-links">
-                    <div role="Button" className="header-text">Home</div>
-                    <div role="Button" className="header-text">Blog</div>
-                    <div role="Button" className="header-text">Products</div>
-                    <div role="Button" className="header-text">About</div>
-                    <div role="Button" className="header-text">Contact</div>
+                    <div role="Button" className="header-text"><Link to="/">Home</Link></div>
+                    <div role="Button" className="header-text"><Link to="/blog">Blog</Link></div>
+                    <div role="Button" className="header-text"><Link to="/projects">Products</Link></div>
+                    <div role="Button" className="header-text"><Link to="/about">About</Link></div>
+                    <div role="Button" className="header-text"><Link to="/contact">Contact</Link></div>
                 </div>
                 <div className="social-media">
                     <div className="social-media-icon-container">

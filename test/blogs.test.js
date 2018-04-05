@@ -53,10 +53,12 @@ describe('Blogs', function() {
 
     describe('#delete', function() {
         it('removes the blog from the database', function() {
-            const blog = Blog.findOne({ title: testTitle })
+            let blog = Blog.findOne({ title: testTitle })
+            const id = blog.get('_id');
 
             blog.delete();
-            chai.assert.equal(Blog.findOne({ title: testTitle }), undefined);
+
+            chai.assert.equal(Blog.findOne({ _id: id }), undefined);
         });
     });
 

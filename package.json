@@ -13,7 +13,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "meteor test --driver-package meteortesting:mocha"
+    "test": "meteor test --once --driver-package meteortesting:mocha"
   },
   "repository": {
     "type": "git",

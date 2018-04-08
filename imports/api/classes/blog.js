@@ -12,13 +12,23 @@ export default Blog = Class.create({
             type: String,
             validators: [{
                 type: 'minLength',
-                param: 3
+                param: 3,
+                message: 'Blog title must be at least 3 characters long'
             }, {
                 type: 'maxLength',
-                param: 60
+                param: 60,
+                message: 'Blog title can be at most 60 characters long'
             }]
         },
-        body: String,
+        body: {
+            type: String,
+            validators: [{
+                type: 'maxLength',
+                // Maximum length is approximately 2000 words
+                param: 16384,
+                message: 'Blog post can be at most 16384 characters long'
+            }]
+        },
         author: String,
         createdAt: Date
     },
@@ -30,7 +40,7 @@ export default Blog = Class.create({
                     if (err) {
                         console.error("Failed to save blog to db");
                         console.error(err);
-                        reject(err);
+                        reject(Error(err));
                     } else {
                         self.reload()
                         resolve(self);
@@ -41,12 +51,6 @@ export default Blog = Class.create({
         },
 
         create() {
-            this.validate({ fields: ['title', 'body'] }, err => {
-                if (ValidationError.is(err)) {
-                    console.error("Blog object is not valid");
-                    console.error(err.error);
-                }
-            });
             //TODO: use meteor User framework
             this.author = 'Dummy Author';
             this.createdAt = new Date();

@@ -29,6 +29,7 @@ export default Blog = Class.create({
                 message: 'Blog post can be at most 16384 characters long'
             }]
         },
+        isDraft: Boolean,
         author: String,
         createdAt: Date
     },
@@ -51,9 +52,12 @@ export default Blog = Class.create({
         },
 
         create() {
-            //TODO: use meteor User framework
+            //TODO: Use meteor user framework
             this.author = 'Dummy Author';
             this.createdAt = new Date();
+            if (!this.isDraft) {
+                this.isDraft = false;
+            }
             return this.safe_save();
         },
         rename(title) {
@@ -66,6 +70,11 @@ export default Blog = Class.create({
         },
         delete() {
             return this.remove();
+        }
+    },
+    helpers: {
+        equals(blog) {
+            return blog.get('_id') == this._id;
         }
     }
 });

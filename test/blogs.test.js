@@ -11,11 +11,6 @@ describe('Blogs', function() {
 
     beforeEach(function() {
         resetDatabase();
-        const blog = new Blog({
-            title: testTitle,
-            body: testBody
-        });
-        blog.create();
     });
 
     describe('validators', function() {
@@ -41,7 +36,6 @@ describe('Blogs', function() {
                 },
                 err => {
                     chai.assert.isTrue(ValidationError.is(err));
-                    // TODO: Find way to put error messages in one place
                     chai.assert.equal(err.reason, '"title" has to be a string');
                 });
             });
@@ -55,7 +49,6 @@ describe('Blogs', function() {
                 },
                 err => {
                     chai.assert.isTrue(ValidationError.is(err));
-                    // TODO: Find way to put error messages in one place
                     chai.assert.equal(err.reason, 'Blog title can be at most 60 characters long');
                 });
             });
@@ -121,7 +114,6 @@ describe('Blogs', function() {
                 },
                 err => {
                     chai.assert.isTrue(ValidationError.is(err));
-                    // TODO: Find way to put error messages in one place
                     chai.assert.equal(err.reason, '"body" has to be a string');
                 });
             });
@@ -141,7 +133,6 @@ describe('Blogs', function() {
                 },
                 err => {
                     chai.assert.isTrue(ValidationError.is(err));
-                    // TODO: Find way to put error messages in one place
                     chai.assert.equal(err.reason, 'Blog post can be at most 16384 characters long');
                 });
             });
@@ -196,6 +187,12 @@ describe('Blogs', function() {
 
     describe('#create', function() {
         it('Is created in the \'Blogs\' collection', function() {
+            const blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            blog.create();
+
             const queryBlog = Blog.findOne({ title: testTitle });
             chai.assert.equal(queryBlog.get('title'), testTitle);
             chai.assert.equal(queryBlog.get('body'), testBody);
@@ -210,10 +207,34 @@ describe('Blogs', function() {
             blog = blog.create();
             const time_diff = Math.abs(created_time.getTime() - blog.get('createdAt').getTime());
             chai.assert.isBelow(time_diff, 1000);
-        })
+        });
+
+        it('Can be created as a draft', function() {
+            let draft_blog = new Blog({
+                title: testTitle,
+                body: testBody,
+                isDraft: true
+            });
+            draft_blog = draft_blog.create();
+
+            const blog = Blog.findOne({ isDraft: true });
+            chai.assert.isTrue(draft_blog.equals(blog));
+        });
+
+        it('Is created with the authenticated user as the author', function() {
+            chai.assert.fail();
+        });
     });
 
     describe('#rename', function() {
+        beforeEach(function() {
+            const blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            blog.create();
+        });
+
         it('Changes the title of the blog post', function() {
             let blog = Blog.findOne({ title: testTitle });
             const id = blog.get('_id');
@@ -223,10 +244,20 @@ describe('Blogs', function() {
 
             blog = Blog.findOne({ _id: id });
             chai.assert.equal(blog.get('title'), newTitle);
+            //TODO: make sure change is persisted to collection
+            chai.assert.fail();
         });
     });
 
     describe('#modify', function() {
+        beforeEach(function() {
+            const blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            blog.create();
+        });
+
         it('Changes the content of the blog post', function() {
             let blog = Blog.findOne({ title: testTitle });
             const id = blog.get('_id');
@@ -236,10 +267,20 @@ describe('Blogs', function() {
 
             blog = Blog.findOne({ _id: id });
             chai.assert.equal(blog.get('body'), newContent);
+            //TODO: make sure change is persisted to collection
+            chai.assert.fail();
         });
     });
 
     describe('#delete', function() {
+        beforeEach(function() {
+            const blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            blog.create();
+        });
+
         it('Removes the blog from the database', function() {
             let blog = Blog.findOne({ title: testTitle })
             const id = blog.get('_id');
@@ -247,6 +288,23 @@ describe('Blogs', function() {
             blog.delete();
 
             chai.assert.equal(Blog.findOne({ _id: id }), undefined);
+        });
+    });
+
+    describe('#equals', function() {
+        it('Returns true if the two blogs are exactly the same', function() {
+            //TODO:
+            chai.assert.fail();
+        });
+
+        it('Returns false if the two blogs are not exactly the same', function() {
+            //TODO:
+            chai.assert.fail();
+        });
+
+        it('Returns false if the object being compared to is not a blog', function() {
+            //TODO:
+            chai.assert.fail();
         });
     });
 

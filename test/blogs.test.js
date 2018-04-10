@@ -236,16 +236,14 @@ describe('Blogs', function() {
         });
 
         it('Changes the title of the blog post', function() {
-            let blog = Blog.findOne({ title: testTitle });
+            const blog = Blog.findOne({ title: testTitle });
             const id = blog.get('_id');
 
             const newTitle = 'New title';
             blog.rename(newTitle);
 
-            blog = Blog.findOne({ _id: id });
-            chai.assert.equal(blog.get('title'), newTitle);
-            //TODO: make sure change is persisted to collection
-            chai.assert.fail();
+            const stored_blog = Blog.findOne({ _id: id });
+            chai.assert.equal(stored_blog.get('title'), newTitle);
         });
     });
 
@@ -259,16 +257,14 @@ describe('Blogs', function() {
         });
 
         it('Changes the content of the blog post', function() {
-            let blog = Blog.findOne({ title: testTitle });
+            const blog = Blog.findOne({ title: testTitle });
             const id = blog.get('_id');
 
             const newContent = 'Now there is some new content';
             blog.modify(newContent);
 
-            blog = Blog.findOne({ _id: id });
-            chai.assert.equal(blog.get('body'), newContent);
-            //TODO: make sure change is persisted to collection
-            chai.assert.fail();
+            const stored_blog = Blog.findOne({ _id: id });
+            chai.assert.equal(stored_blog.get('body'), newContent);
         });
     });
 
@@ -293,18 +289,40 @@ describe('Blogs', function() {
 
     describe('#equals', function() {
         it('Returns true if the two blogs are exactly the same', function() {
-            //TODO:
-            chai.assert.fail();
+            let blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            blog = blog.create();
+
+            chai.assert.isTrue(blog.equals(blog));
         });
 
         it('Returns false if the two blogs are not exactly the same', function() {
-            //TODO:
-            chai.assert.fail();
+            let blog_a = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            let blog_b = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            blog_a = blog_a.create();
+            blog_b = blog_b.create();
+
+            chai.assert.isFalse(blog_a.equals(blog_b));
         });
 
         it('Returns false if the object being compared to is not a blog', function() {
-            //TODO:
-            chai.assert.fail();
+            const blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            const db_blog = blog.create();
+            const pojo = {
+                fake: "true"
+            };
+            chai.assert.isFalse(db_blog.equals(pojo));
         });
     });
 

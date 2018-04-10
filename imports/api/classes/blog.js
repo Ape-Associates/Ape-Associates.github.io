@@ -74,6 +74,9 @@ export default Blog = Class.create({
     },
     helpers: {
         equals(blog) {
+            if (!blog.get) {
+                return false;
+            }
             return blog.get('_id') == this._id;
         }
     }

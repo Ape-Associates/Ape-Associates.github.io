@@ -12,4 +12,12 @@ Meteor.publish('blogs.latest', function blogsLatest() {
 
 Meteor.publish('blogs.byAuthor', function blogsByAuthor(authorId) {
     return Blog.find({ author: authorId, isDraft: false }, { sort: { createdAt: -1 } });
-}
+});
+
+Meteor.publish('blogs.myDrafts', function blogsMyDrafts() {
+    if (!this.userId) {
+        return this.ready();
+    }
+
+    return Blog.find({ author: this.userId, isDraft: true }, { sort: { createdAt: -1 } });
+});

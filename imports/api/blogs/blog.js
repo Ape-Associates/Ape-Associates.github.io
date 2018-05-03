@@ -2,7 +2,7 @@ import { check } from 'meteor/check';
 import { Class, ValidationError } from 'meteor/jagi:astronomy';
 import { Meteor } from 'meteor/meteor';
 
-import { Blogs } from '../collections/blogs.js';
+import { Blogs } from './blogs.js';
 
 export default Blog = Class.create({
     name: 'Blog',

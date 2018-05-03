@@ -1,16 +1,23 @@
 import { resetDatabase } from 'meteor/xolvio:cleaner';
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { chai } from 'meteor/practicalmeteor:chai';
 import { ValidationError } from 'meteor/jagi:astronomy';
+import { Accounts } from 'meteor/accounts-base';
 
-import Blog from '../imports/api/classes/blog.js';
+import Blog from '../../imports/api/classes/blog.js';
+
 
 describe('Blogs', function() {
+    Meteor.methods({
+        'test.resetDatabase': () => resetDatabase()
+    });
+
     const testTitle = 'Test title';
     const testBody = 'Test body';
 
-    beforeEach(function() {
-        resetDatabase();
+    beforeEach(function(done) {
+        Meteor.call('test.resetDatabase', done);
     });
 
     describe('validators', function() {
@@ -204,8 +211,9 @@ describe('Blogs', function() {
                 body: testBody
             });
             const created_time = new Date();
-            blog = blog.create();
-            const time_diff = Math.abs(created_time.getTime() - blog.get('createdAt').getTime());
+            blog.create();
+            const queryBlog = Blog.findOne({ title: testTitle });
+            const time_diff = Math.abs(created_time.getTime() - queryBlog.get('createdAt').getTime());
             chai.assert.isBelow(time_diff, 1000);
         });
 
@@ -215,13 +223,33 @@ describe('Blogs', function() {
                 body: testBody,
                 isDraft: true
             });
-            draft_blog = draft_blog.create();
+            draft_blog.create();
 
             const blog = Blog.findOne({ isDraft: true });
-            chai.assert.isTrue(draft_blog.equals(blog));
+            chai.assert.equal(blog.get('title'), draft_blog.title);
+            chai.assert.equal(blog.get('body'), draft_blog.body);
         });
 
         it('Is created with the authenticated user as the author', function() {
+            let new_blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            // Don't think this actually works
+            Accounts.createUser({
+                username: 'testname',
+                password: 'testpassword'
+            }, function(error) {
+                console.log("User ID: ");
+                console.log(Meteor.userId());
+                console.log(Meteor.user());
+                new_blog.create();
+                const blog = Blog.findOne({ title: testTitle, body: testBody });
+                chai.assert.equal(new_blog.get('author'), Meteor.userId());
+            });
+        });
+
+        it('Can only be created by users allowed to post', function() {
             chai.assert.fail();
         });
     });
@@ -233,6 +261,10 @@ describe('Blogs', function() {
                 body: testBody
             });
             blog.create();
+        });
+
+        it('Can only be renamed by the blog author', function() {
+            chai.assert.fail();
         });
 
         it('Changes the title of the blog post', function() {
@@ -266,6 +298,10 @@ describe('Blogs', function() {
             const stored_blog = Blog.findOne({ _id: id });
             chai.assert.equal(stored_blog.get('body'), newContent);
         });
+
+        it('Can only be modified by the blog author', function() {
+            chai.assert.fail();
+        });
     });
 
     describe('#delete', function() {
@@ -285,6 +321,10 @@ describe('Blogs', function() {
 
             chai.assert.equal(Blog.findOne({ _id: id }), undefined);
         });
+
+        it('Can only be deleted by the blog author', function() {
+            chai.assert.fail();
+        });
     });
 
     describe('#equals', function() {
@@ -293,12 +333,14 @@ describe('Blogs', function() {
                 title: testTitle,
                 body: testBody
             });
-            blog = blog.create();
+            blog.create();
 
-            chai.assert.isTrue(blog.equals(blog));
+            const query_blog = Blog.findOne({ title: testTitle });
+
+            chai.assert.isTrue(queryBlog.equals(queryBlog));
         });
 
-        it('Returns false if the two blogs are not exactly the same', function() {
+        it('Returns false if the two blogs are not the same', function() {
             let blog_a = new Blog({
                 title: testTitle,
                 body: testBody
@@ -307,8 +349,13 @@ describe('Blogs', function() {
                 title: testTitle,
                 body: testBody
             });
-            blog_a = blog_a.create();
-            blog_b = blog_b.create();
+            blog_a.create();
+            blog_b.create();
+
+            const blogs = Blog.find({ title: testTitle }).fetch();
+            console.log(blogs);
+            blog_a = blogs[0];
+            blog_b = blogs[1];
 
             chai.assert.isFalse(blog_a.equals(blog_b));
         });

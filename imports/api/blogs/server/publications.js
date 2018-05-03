@@ -11,5 +11,5 @@ Meteor.publish('blogs.latest', function blogsLatest() {
 });
 
 Meteor.publish('blogs.byAuthor', function blogsByAuthor(authorId) {
-    return Blog.find({ author: authorId }, { sort: { createdAt: -1 } });
+    return Blog.find({ author: authorId, isDraft: false }, { sort: { createdAt: -1 } });
 }

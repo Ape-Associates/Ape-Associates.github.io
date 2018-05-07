@@ -1,11 +1,9 @@
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { chai } from 'meteor/practicalmeteor:chai';
 import { ValidationError } from 'meteor/jagi:astronomy';
-import { Accounts } from 'meteor/accounts-base';
 
-import Blog from '../../imports/api/classes/blog.js';
+import Blog from '../../imports/api/blogs/blog.js';
 
 
 describe('Blogs', function() {
@@ -231,22 +229,7 @@ describe('Blogs', function() {
         });
 
         it('Is created with the authenticated user as the author', function() {
-            let new_blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            // Don't think this actually works
-            Accounts.createUser({
-                username: 'testname',
-                password: 'testpassword'
-            }, function(error) {
-                console.log("User ID: ");
-                console.log(Meteor.userId());
-                console.log(Meteor.user());
-                new_blog.create();
-                const blog = Blog.findOne({ title: testTitle, body: testBody });
-                chai.assert.equal(new_blog.get('author'), Meteor.userId());
-            });
+            chai.assert.fail();
         });
 
         it('Can only be created by users allowed to post', function() {
@@ -335,7 +318,7 @@ describe('Blogs', function() {
             });
             blog.create();
 
-            const query_blog = Blog.findOne({ title: testTitle });
+            const queryBlog = Blog.findOne({ title: testTitle });
 
             chai.assert.isTrue(queryBlog.equals(queryBlog));
         });

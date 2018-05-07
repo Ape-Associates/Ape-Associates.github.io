@@ -84,7 +84,6 @@ export default class Home extends Component {
                             <h2>Latest post</h2>
                         </div>
                         <div className="body-text">
-                            <h1>Latest Post</h1>
                             <div className="latest">
                                 {this.renderLatestBlog()}
                             </div>

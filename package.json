@@ -12,9 +12,9 @@
     "react-router-dom": "^4.2.2"
   },
   "devDependencies": {
-    "chromedriver": "^2.38.0",
-    "selenium-webdriver": "^3.6.0",
-    "prop-types": "^15.6.1"
+    "chromedriver": "^2.38.3",
+    "prop-types": "^15.6.1",
+    "selenium-webdriver": "^3.0.0-beta-2"
   },
   "scripts": {
     "test": "TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package meteortesting:mocha"

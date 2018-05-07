@@ -4,7 +4,7 @@ import { Mongo } from 'meteor/mongo';
 import { chai } from 'meteor/practicalmeteor:chai';
 import { ValidationError } from 'meteor/jagi:astronomy';
 
-import Blog from '../imports/api/classes/blog.js';
+import Blog from '../imports/api/blogs/blog.js';
 
 describe('Blogs', function() {
     const testTitle = 'Test title';

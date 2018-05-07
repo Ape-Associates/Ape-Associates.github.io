@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 
+import Blog from '../../api/blogs/blog.js';
 import Banner from './Banner.jsx';
 import NavigationTile from '../components/Navigation-Tile.jsx';
 
 // Home component - represents the home page
 export default class Home extends Component {
     constructor(props) {
+
         super(props);
     }
 
 
     renderNavTiles() {
-        console.log('hello world');
         const nav_tiles_props = [
             {
                 'name': 'Blog',
@@ -47,6 +49,20 @@ export default class Home extends Component {
 
     }
 
+    renderLatestBlog() {
+        if (this.props.loading) {
+            return (<p>Loading...</p>)
+        } else {
+            const latest = this.props.latest;
+            return (
+                <div>
+                    <h2 className="blog-title">{latest.title}</h2>
+                    <p className="blog-body">{latest.body}</p>
+                </div>
+            )
+        }
+    }
+
     render() {
         return (
             <div className="aa-home">
@@ -68,15 +84,18 @@ export default class Home extends Component {
                             <h2>Latest post</h2>
                         </div>
                         <div className="body-text">
-                            //Todo: use api to render most previous blog post
-                            <p>blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-                                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
-                                blah blah blah blah blah blah blah blah
-                            </p>
+                            <div className="latest">
+                                {this.renderLatestBlog()}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         );
     }
+}
+
+Home.propTypes = {
+    loading: PropTypes.bool,
+    latest: PropTypes.object
 }

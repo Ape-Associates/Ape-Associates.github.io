@@ -11,7 +11,9 @@
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prop-types": "^15.6.1"
+  },
   "scripts": {
     "test": "meteor test --once --driver-package meteortesting:mocha"
   },

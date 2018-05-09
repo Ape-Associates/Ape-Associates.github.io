@@ -2,6 +2,7 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Meteor } from 'meteor/meteor';
 import { chai } from 'meteor/practicalmeteor:chai';
 import { ValidationError } from 'meteor/jagi:astronomy';
+import { sinon } from 'meteor/practicalmeteor:sinon';
 
 import Blog from '../../imports/api/blogs/blog.js';
 
@@ -14,11 +15,12 @@ describe('Blogs', function() {
     const testTitle = 'Test title';
     const testBody = 'Test body';
 
-    beforeEach(function(done) {
-        Meteor.call('test.resetDatabase', done);
-    });
-
     describe('validators', function() {
+
+        beforeEach(function(done) {
+            Meteor.call('test.resetDatabase', done);
+        });
+
         it('allows valid blogs', function() {
             const valid_blog = new Blog({
                 title: 'Valid Title',
@@ -191,6 +193,11 @@ describe('Blogs', function() {
     });
 
     describe('#create', function() {
+
+        beforeEach(function(done) {
+            Meteor.call('test.resetDatabase', done);
+        });
+
         it('Is created in the \'Blogs\' collection', function() {
             const blog = new Blog({
                 title: testTitle,
@@ -246,6 +253,10 @@ describe('Blogs', function() {
             blog.create();
         });
 
+        afterEach(function() {
+            Blog.findOne().delete();
+        });
+
         it('Can only be renamed by the blog author', function() {
             chai.assert.fail();
         });
@@ -269,6 +280,10 @@ describe('Blogs', function() {
                 body: testBody
             });
             blog.create();
+        });
+
+        afterEach(function() {
+            Blog.findOne().delete();
         });
 
         it('Changes the content of the blog post', function() {
@@ -296,6 +311,10 @@ describe('Blogs', function() {
             blog.create();
         });
 
+        afterEach(function() {
+            Blog.findOne().delete();
+        });
+
         it('Removes the blog from the database', function() {
             let blog = Blog.findOne({ title: testTitle })
             const id = blog.get('_id');
@@ -311,6 +330,10 @@ describe('Blogs', function() {
     });
 
     describe('#equals', function() {
+        beforeEach(function(done) {
+            Meteor.call('test.resetDatabase', done);
+        });
+
         it('Returns true if the two blogs are exactly the same', function() {
             let blog = new Blog({
                 title: testTitle,

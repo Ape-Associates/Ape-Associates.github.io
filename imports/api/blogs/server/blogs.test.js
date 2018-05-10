@@ -2,6 +2,7 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Meteor } from 'meteor/meteor';
 import { chai } from 'meteor/practicalmeteor:chai';
 import { ValidationError } from 'meteor/jagi:astronomy';
+
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
@@ -273,7 +274,7 @@ describe('Blogs', function() {
             });
             blog.create();
 
-            chai.expect(meteorUserStub).to.have.been.called()
+            chai.expect(meteorUserStub).to.have.been.called;
 
             const queryBlog = Blog.findOne({});
             chai.assert.equal(queryBlog.get('author'), fakeUserId);
@@ -333,7 +334,7 @@ describe('Blogs', function() {
             const newTitle = 'New title';
             blog.rename(newTitle);
 
-            chai.expect(meteorUserStub).to.have.been.called()
+            chai.expect(meteorUserStub).to.have.been.called;
             chai.expect(errorSpy).to.have.been.calledWith("Error renaming blog: only author can rename");
 
             const stored_blog = Blog.findOne();
@@ -386,7 +387,7 @@ describe('Blogs', function() {
             const newContent = 'Now there is some new content';
             blog.modify(newContent);
 
-            chai.expect(meteorUserStub).to.have.been.called()
+            chai.expect(meteorUserStub).to.have.been.called;
             chai.expect(errorSpy).to.have.been.calledWith("Error modifying blog: only author can modify");
 
             const stored_blog = Blog.findOne();
@@ -438,7 +439,7 @@ describe('Blogs', function() {
             const blog = Blog.findOne();
             blog.delete();
 
-            chai.expect(meteorUserStub).to.have.been.called()
+            chai.expect(meteorUserStub).to.have.been.called;
             chai.expect(errorSpy).to.have.been.calledWith("Error deleting blog: only author can delete");
 
             const stored_blog = Blog.findOne();

@@ -2,12 +2,16 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Meteor } from 'meteor/meteor';
 import { chai } from 'meteor/practicalmeteor:chai';
 import { ValidationError } from 'meteor/jagi:astronomy';
-import { sinon } from 'meteor/practicalmeteor:sinon';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
-import Blog from '../../imports/api/blogs/blog.js';
+import Blog from '../blog.js';
 
 
 describe('Blogs', function() {
+    chai.use(sinonChai);
+
+    //TODO: This doesn't need to exist on server tests
     Meteor.methods({
         'test.resetDatabase': () => resetDatabase()
     });
@@ -193,6 +197,16 @@ describe('Blogs', function() {
     });
 
     describe('#create', function() {
+        let errorSpy;
+        let meteorUserStub
+
+        before(function() {
+            errorSpy = sinon.spy(console, 'error');
+
+            meteorUserStub = sinon.stub(Meteor, 'userId');
+            const fakeUserId = '12345678';
+            meteorUserStub.returns(fakeUserId);
+        });
 
         beforeEach(function(done) {
             Meteor.call('test.resetDatabase', done);
@@ -236,15 +250,42 @@ describe('Blogs', function() {
         });
 
         it('Is created with the authenticated user as the author', function() {
-            chai.assert.fail();
+            let blog = new Blog({
+                title: testTitle,
+                body: testBody
+            });
+            blog.create();
+
+            chai.expect(meteorUserStub).to.have.been.called()
+
+            const queryBlog = Blog.findOne({});
+            chai.assert.equal(queryBlog.get('author'), fakeUserId);
+
         });
 
         it('Can only be created by users allowed to post', function() {
             chai.assert.fail();
         });
+
+        after(function() {
+            meteorUserStub.restore();
+            errorSpy.restore();
+        });
+
     });
 
     describe('#rename', function() {
+        let errorSpy;
+        let meteorUserStub
+
+        before(function() {
+            errorSpy = sinon.spy(console, 'error');
+
+            meteorUserStub = sinon.stub(Meteor, 'userId');
+            const fakeUserId = '12345678';
+            meteorUserStub.returns(fakeUserId);
+        });
+
         beforeEach(function() {
             const blog = new Blog({
                 title: testTitle,
@@ -253,12 +294,8 @@ describe('Blogs', function() {
             blog.create();
         });
 
-        afterEach(function() {
-            Blog.findOne().delete();
-        });
-
-        it('Can only be renamed by the blog author', function() {
-            chai.assert.fail();
+        afterEach(function(done) {
+            Meteor.call('test.resetDatabase', done);
         });
 
         it('Changes the title of the blog post', function() {
@@ -271,9 +308,42 @@ describe('Blogs', function() {
             const stored_blog = Blog.findOne({ _id: id });
             chai.assert.equal(stored_blog.get('title'), newTitle);
         });
+
+        before(function() {
+            const other_user_id = '87654321';
+            meteorUserStub.returns(other_user_id);
+        });
+
+        it('Can only be renamed by the blog author', function() {
+            const blog = Blog.findOne();
+            const newTitle = 'New title';
+            blog.rename(newTitle);
+
+            chai.expect(meteorUserStub).to.have.been.called()
+            chai.expect(errorSpy).to.have.been.calledWith("Error renaming blog: only author can rename");
+
+            const stored_blog = Blog.findOne();
+            chai.assert.notEqual(stored_blog.get('title'), newTitle);
+        });
+
+        after(function() {
+            meteorUserStub.restore();
+            errorSpy.restore();
+        });
     });
 
     describe('#modify', function() {
+        let errorSpy;
+        let meteorUserStub
+
+        before(function() {
+            errorSpy = sinon.spy(console, 'error');
+
+            meteorUserStub = sinon.stub(Meteor, 'userId');
+            const fakeUserId = '12345678';
+            meteorUserStub.returns(fakeUserId);
+        });
+
         beforeEach(function() {
             const blog = new Blog({
                 title: testTitle,
@@ -282,8 +352,8 @@ describe('Blogs', function() {
             blog.create();
         });
 
-        afterEach(function() {
-            Blog.findOne().delete();
+        afterEach(function(done) {
+            Meteor.call('test.resetDatabase', done);
         });
 
         it('Changes the content of the blog post', function() {
@@ -298,11 +368,40 @@ describe('Blogs', function() {
         });
 
         it('Can only be modified by the blog author', function() {
-            chai.assert.fail();
+            const other_user_id = '87654321';
+            meteorUserStub.returns(other_user_id);
+
+            const blog = Blog.findOne();
+            const newContent = 'Now there is some new content';
+            blog.modify(newContent);
+
+            chai.expect(meteorUserStub).to.have.been.called()
+            chai.expect(errorSpy).to.have.been.calledWith("Error modifying blog: only author can modify");
+
+            const stored_blog = Blog.findOne();
+            chai.assert.notEqual(stored_blog.get('body'), newContent);
+
+            meteorUserStub.returns(fakeUserId);
         });
+
+        after(function() {
+            meteorUserStub.restore();
+            errorSpy.restore();
+        })
     });
 
     describe('#delete', function() {
+        let errorSpy;
+        let meteorUserStub
+
+        before(function() {
+            errorSpy = sinon.spy(console, 'error');
+
+            meteorUserStub = sinon.stub(Meteor, 'userId');
+            const fakeUserId = '12345678';
+            meteorUserStub.returns(fakeUserId);
+        });
+
         beforeEach(function() {
             const blog = new Blog({
                 title: testTitle,
@@ -311,8 +410,8 @@ describe('Blogs', function() {
             blog.create();
         });
 
-        afterEach(function() {
-            Blog.findOne().delete();
+        afterEach(function(done) {
+            Meteor.call('test.resetDatabase', done);
         });
 
         it('Removes the blog from the database', function() {
@@ -325,7 +424,24 @@ describe('Blogs', function() {
         });
 
         it('Can only be deleted by the blog author', function() {
-            chai.assert.fail();
+            const other_user_id = '87654321';
+            meteorUserStub.returns(other_user_id);
+
+            const blog = Blog.findOne();
+            blog.delete();
+
+            chai.expect(meteorUserStub).to.have.been.called()
+            chai.expect(errorSpy).to.have.been.calledWith("Error deleting blog: only author can delete");
+
+            const stored_blog = Blog.findOne();
+            chai.assert.idDefined(stored_blog);
+
+            meteorUserStub.returns(fakeUserId);
+        });
+
+        after(function() {
+            meteorUserStub.restore();
+            errorSpy.restore();
         });
     });
 
@@ -359,7 +475,6 @@ describe('Blogs', function() {
             blog_b.create();
 
             const blogs = Blog.find({ title: testTitle }).fetch();
-            console.log(blogs);
             blog_a = blogs[0];
             blog_b = blogs[1];
 

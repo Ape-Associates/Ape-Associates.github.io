@@ -7,6 +7,17 @@ import sinonChai from 'sinon-chai';
 
 import Blog from '../blog.js';
 
+function stubUserId() {
+    const meteorUserStub = sinon.stub(Meteor, 'userId');
+    const fakeUserId = '12345678';
+    meteorUserStub.returns(fakeUserId);
+
+    return meteorUserStub;
+}
+
+function spyConsoleError() {
+    return sinon.spy(console, 'error');
+}
 
 describe('Blogs', function() {
     chai.use(sinonChai);
@@ -201,11 +212,8 @@ describe('Blogs', function() {
         let meteorUserStub
 
         before(function() {
-            errorSpy = sinon.spy(console, 'error');
-
-            meteorUserStub = sinon.stub(Meteor, 'userId');
-            const fakeUserId = '12345678';
-            meteorUserStub.returns(fakeUserId);
+            meteorUserStub = stubUserId();
+            errorSpy = spyConsoleError();
         });
 
         beforeEach(function(done) {
@@ -279,11 +287,8 @@ describe('Blogs', function() {
         let meteorUserStub
 
         before(function() {
-            errorSpy = sinon.spy(console, 'error');
-
-            meteorUserStub = sinon.stub(Meteor, 'userId');
-            const fakeUserId = '12345678';
-            meteorUserStub.returns(fakeUserId);
+            meteorUserStub = stubUserId();
+            errorSpy = spyConsoleError();
         });
 
         beforeEach(function() {
@@ -337,11 +342,8 @@ describe('Blogs', function() {
         let meteorUserStub
 
         before(function() {
-            errorSpy = sinon.spy(console, 'error');
-
-            meteorUserStub = sinon.stub(Meteor, 'userId');
-            const fakeUserId = '12345678';
-            meteorUserStub.returns(fakeUserId);
+            meteorUserStub = stubUserId();
+            errorSpy = spyConsoleError();
         });
 
         beforeEach(function() {
@@ -395,11 +397,8 @@ describe('Blogs', function() {
         let meteorUserStub
 
         before(function() {
-            errorSpy = sinon.spy(console, 'error');
-
-            meteorUserStub = sinon.stub(Meteor, 'userId');
-            const fakeUserId = '12345678';
-            meteorUserStub.returns(fakeUserId);
+            meteorUserStub = stubUserId();
+            errorSpy = spyConsoleError();
         });
 
         beforeEach(function() {
@@ -493,5 +492,4 @@ describe('Blogs', function() {
             chai.assert.isFalse(db_blog.equals(pojo));
         });
     });
-
 });

@@ -8,18 +8,6 @@ import sinonChai from 'sinon-chai';
 
 import Blog from '../blog.js';
 
-function stubUserId() {
-    const meteorUserStub = sinon.stub(Meteor, 'userId');
-    const fakeUserId = '12345678';
-    meteorUserStub.returns(fakeUserId);
-
-    return meteorUserStub;
-}
-
-function spyConsoleError() {
-    return sinon.spy(console, 'error');
-}
-
 before(function() {
     Meteor.methods({
         'test.resetDatabase': () => resetDatabase()
@@ -28,16 +16,20 @@ before(function() {
 })
 
 describe('Blogs', function() {
-    let meteorUserStub;
     const testTitle = 'Test title';
     const testBody = 'Test body';
 
+    let errorSpy;
+    let meteorUserStub
+    const fakeUserId = '12345678';
+
     before(function() {
-        meteorUserStub = stubUserId();
+        meteorUserStub = sinon.stub(Meteor, 'userId');
+        const fakeUserId = '12345678';
+        meteorUserStub.returns(fakeUserId);
     });
 
     describe('validators', function() {
-
         beforeEach(function(done) {
             Meteor.call('test.resetDatabase', done);
         });
@@ -211,301 +203,282 @@ describe('Blogs', function() {
                 });
             });
         });
+    });
 
-        after(function() {
-            meteorUserStub.restore();
+    describe('methods', function() {
+        describe('#create', function() {
+            beforeEach(function(done) {
+                Meteor.call('test.resetDatabase', done);
+            });
+
+            it('Is created in the \'Blogs\' collection', function() {
+                const blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                blog.create();
+
+                const queryBlog = Blog.findOne({ title: testTitle });
+                chai.assert.equal(queryBlog.get('title'), testTitle);
+                chai.assert.equal(queryBlog.get('body'), testBody);
+            });
+
+            it('Is created with a current timestamp', function() {
+                let blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                const created_time = new Date();
+                blog.create();
+                const queryBlog = Blog.findOne({ title: testTitle });
+                const time_diff = Math.abs(created_time.getTime() - queryBlog.get('createdAt').getTime());
+                chai.assert.isBelow(time_diff, 1000);
+            });
+
+            it('Can be created as a draft', function() {
+                let draft_blog = new Blog({
+                    title: testTitle,
+                    body: testBody,
+                    isDraft: true
+                });
+                draft_blog.create();
+
+                const blog = Blog.findOne({ isDraft: true });
+                chai.assert.equal(blog.get('title'), draft_blog.title);
+                chai.assert.equal(blog.get('body'), draft_blog.body);
+            });
+
+            it('Is created with the authenticated user as the author', function() {
+                let blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                blog.create();
+
+                chai.expect(meteorUserStub).to.have.been.called;
+
+                const queryBlog = Blog.findOne({});
+                chai.assert.equal(queryBlog.get('author'), '12345678');
+
+            });
+
+            it('Can only be created by users allowed to post', function() {
+                chai.assert.fail();
+            });
+        });
+
+        describe('#rename', function() {
+            let errorSpy;
+
+            let unownedBlogTitle = 'Other Blog';
+            let unownedBlogBody = 'Other Body';
+
+            before(function() {
+                const blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                blog.create();
+
+                meteorUserStub.returns('87654321');
+
+                const unowned_blog = new Blog({
+                    title: unownedBlogTitle,
+                    body: unownedBlogBody
+                });
+                unowned_blog.create();
+
+                meteorUserStub.returns(fakeUserId);
+
+                errorSpy = sinon.spy(console, 'error');
+            });
+
+            it('Changes the title of the blog post', function() {
+                const blog = Blog.findOne({ title: testTitle });
+                const id = blog.get('_id');
+
+                const newTitle = 'New title';
+                blog.rename(newTitle);
+
+                const stored_blog = Blog.findOne({ _id: id });
+                chai.assert.equal(stored_blog.get('title'), newTitle);
+            });
+
+            it('Can only be renamed by the blog author', function() {
+                const blog = Blog.findOne({ title: unownedBlogTitle });
+                const id = blog.get('_id');
+                const newTitle = 'New title';
+                blog.rename(newTitle);
+
+                chai.expect(meteorUserStub).to.have.been.called;
+                chai.expect(errorSpy).to.have.been.calledWith('Error renaming blog: only author can rename');
+
+                const stored_blog = Blog.findOne({ _id: id });
+                chai.assert.notEqual(stored_blog.get('title'), newTitle);
+            });
+
+            after(function() {
+                errorSpy.restore();
+                Meteor.call('test.resetDatabase');
+            });
+        });
+
+        describe('#modify', function() {
+            let unownedBlogTitle = 'Other Blog';
+            let unownedBlogBody = 'Other Body';
+
+            before(function() {
+                const blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                blog.create();
+
+                meteorUserStub.returns('87654321');
+
+                const unowned_blog = new Blog({
+                    title: unownedBlogTitle,
+                    body: unownedBlogBody
+                });
+                unowned_blog.create();
+
+                meteorUserStub.returns(fakeUserId);
+
+                errorSpy = sinon.spy(console, 'error');
+            });
+
+            it('Changes the content of the blog post', function() {
+                const blog = Blog.findOne({ title: testTitle });
+                const id = blog.get('_id');
+
+                const newContent = 'Now there is some new content';
+                blog.modify(newContent);
+
+                const stored_blog = Blog.findOne({ _id: id });
+                chai.assert.equal(stored_blog.get('body'), newContent);
+            });
+
+            it('Can only be modified by the blog author', function() {
+                const blog = Blog.findOne({ title: unownedBlogTitle });
+                const id = blog.get('_id');
+                const newContent = 'Now there is some new content';
+                blog.modify(newContent);
+
+                chai.expect(meteorUserStub).to.have.been.called;
+                chai.expect(errorSpy).to.have.been.calledWith("Error modifying blog: only author can modify");
+
+                const stored_blog = Blog.findOne({ _id: id });
+                chai.assert.notEqual(stored_blog.get('body'), newContent);
+            });
+
+            after(function() {
+                errorSpy.restore();
+                Meteor.call('test.resetDatabase');
+            })
+        });
+
+        describe('#delete', function() {
+            let unownedBlogTitle = 'Other Blog';
+            let unownedBlogBody = 'Other Body';
+
+            before(function() {
+                const blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                blog.create();
+
+                meteorUserStub.returns('87654321');
+
+                const unowned_blog = new Blog({
+                    title: unownedBlogTitle,
+                    body: unownedBlogBody
+                });
+                unowned_blog.create();
+
+                meteorUserStub.returns(fakeUserId);
+
+                errorSpy = sinon.spy(console, 'error');
+            });
+
+            it('Removes the blog from the database', function() {
+                let blog = Blog.findOne({ title: testTitle })
+                const id = blog.get('_id');
+
+                blog.delete();
+
+                chai.assert.equal(Blog.findOne({ _id: id }), undefined);
+            });
+
+            it('Can only be deleted by the blog author', function() {
+                const blog = Blog.findOne({ title: unownedBlogTitle });
+                blog.delete();
+
+                chai.expect(meteorUserStub).to.have.been.called;
+                chai.expect(errorSpy).to.have.been.calledWith("Error deleting blog: only author can delete");
+
+                const stored_blog = Blog.findOne();
+                chai.assert.isDefined(stored_blog);
+            });
+
+            after(function(done) {
+                errorSpy.restore();
+                Meteor.call('test.resetDatabase', done);
+            });
+        });
+
+        describe('#equals', function() {
+            beforeEach(function(done) {
+                Meteor.call('test.resetDatabase', done);
+            });
+
+            it('Returns true if the two blogs are exactly the same', function() {
+                let blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                blog.create();
+
+                const queryBlog = Blog.findOne({ title: testTitle });
+
+                chai.assert.isTrue(queryBlog.equals(queryBlog));
+            });
+
+            it('Returns false if the two blogs are not the same', function() {
+                let blog_a = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                let blog_b = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                blog_a.create();
+                blog_b.create();
+
+                const blogs = Blog.find({ title: testTitle }).fetch();
+                blog_a = blogs[0];
+                blog_b = blogs[1];
+
+                chai.assert.isFalse(blog_a.equals(blog_b));
+            });
+
+            it('Returns false if the object being compared to is not a blog', function() {
+                const blog = new Blog({
+                    title: testTitle,
+                    body: testBody
+                });
+                const db_blog = blog.create();
+                const pojo = {
+                    fake: "true"
+                };
+                chai.assert.isFalse(db_blog.equals(pojo));
+            });
+
         });
     });
 
-    describe('#create', function() {
-        let errorSpy;
-        let meteorUserStub
-
-        before(function() {
-            meteorUserStub = stubUserId();
-            errorSpy = spyConsoleError();
-        });
-
-        beforeEach(function(done) {
-            Meteor.call('test.resetDatabase', done);
-        });
-
-        it('Is created in the \'Blogs\' collection', function() {
-            const blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            blog.create();
-
-            const queryBlog = Blog.findOne({ title: testTitle });
-            chai.assert.equal(queryBlog.get('title'), testTitle);
-            chai.assert.equal(queryBlog.get('body'), testBody);
-        });
-
-        it('Is created with a current timestamp', function() {
-            let blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            const created_time = new Date();
-            blog.create();
-            const queryBlog = Blog.findOne({ title: testTitle });
-            const time_diff = Math.abs(created_time.getTime() - queryBlog.get('createdAt').getTime());
-            chai.assert.isBelow(time_diff, 1000);
-        });
-
-        it('Can be created as a draft', function() {
-            let draft_blog = new Blog({
-                title: testTitle,
-                body: testBody,
-                isDraft: true
-            });
-            draft_blog.create();
-
-            const blog = Blog.findOne({ isDraft: true });
-            chai.assert.equal(blog.get('title'), draft_blog.title);
-            chai.assert.equal(blog.get('body'), draft_blog.body);
-        });
-
-        it('Is created with the authenticated user as the author', function() {
-            let blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            blog.create();
-
-            chai.expect(meteorUserStub).to.have.been.called;
-
-            const queryBlog = Blog.findOne({});
-            chai.assert.equal(queryBlog.get('author'), '12345678');
-
-        });
-
-        it('Can only be created by users allowed to post', function() {
-            chai.assert.fail();
-        });
-
-        after(function() {
-            meteorUserStub.restore();
-            errorSpy.restore();
-        });
-
-    });
-
-    describe('#rename', function() {
-        let errorSpy;
-        let meteorUserStub
-
-        before(function() {
-            meteorUserStub = stubUserId();
-            errorSpy = spyConsoleError();
-        });
-
-        beforeEach(function() {
-            const blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            blog.create();
-        });
-
-        afterEach(function(done) {
-            Meteor.call('test.resetDatabase', done);
-        });
-
-        it('Changes the title of the blog post', function() {
-            const blog = Blog.findOne({ title: testTitle });
-            const id = blog.get('_id');
-
-            const newTitle = 'New title';
-            blog.rename(newTitle);
-
-            const stored_blog = Blog.findOne({ _id: id });
-            chai.assert.equal(stored_blog.get('title'), newTitle);
-        });
-
-        before(function() {
-            const other_user_id = '87654321';
-            meteorUserStub.returns(other_user_id);
-        });
-
-        it('Can only be renamed by the blog author', function() {
-            const blog = Blog.findOne();
-            const newTitle = 'New title';
-            blog.rename(newTitle);
-
-            chai.expect(meteorUserStub).to.have.been.called;
-            chai.expect(errorSpy).to.have.been.calledWith("Error renaming blog: only author can rename");
-
-            const stored_blog = Blog.findOne();
-            chai.assert.notEqual(stored_blog.get('title'), newTitle);
-        });
-
-        after(function() {
-            meteorUserStub.restore();
-            errorSpy.restore();
-        });
-    });
-
-    describe('#modify', function() {
-        let errorSpy;
-        let meteorUserStub
-
-        before(function() {
-            meteorUserStub = stubUserId();
-            errorSpy = spyConsoleError();
-        });
-
-        beforeEach(function() {
-            const blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            blog.create();
-        });
-
-        afterEach(function(done) {
-            Meteor.call('test.resetDatabase', done);
-        });
-
-        it('Changes the content of the blog post', function() {
-            const blog = Blog.findOne({ title: testTitle });
-            const id = blog.get('_id');
-
-            const newContent = 'Now there is some new content';
-            blog.modify(newContent);
-
-            const stored_blog = Blog.findOne({ _id: id });
-            chai.assert.equal(stored_blog.get('body'), newContent);
-        });
-
-        it('Can only be modified by the blog author', function() {
-            const other_user_id = '87654321';
-            meteorUserStub.returns(other_user_id);
-
-            const blog = Blog.findOne();
-            const newContent = 'Now there is some new content';
-            blog.modify(newContent);
-
-            chai.expect(meteorUserStub).to.have.been.called;
-            chai.expect(errorSpy).to.have.been.calledWith("Error modifying blog: only author can modify");
-
-            const stored_blog = Blog.findOne();
-            chai.assert.notEqual(stored_blog.get('body'), newContent);
-        });
-
-        after(function() {
-            meteorUserStub.restore();
-            errorSpy.restore();
-        })
-    });
-
-    describe('#delete', function() {
-        let errorSpy;
-        let meteorUserStub
-
-        before(function() {
-            meteorUserStub = stubUserId();
-            errorSpy = spyConsoleError();
-        });
-
-        beforeEach(function() {
-            const blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            blog.create();
-        });
-
-        afterEach(function(done) {
-            Meteor.call('test.resetDatabase', done);
-        });
-
-        it('Removes the blog from the database', function() {
-            let blog = Blog.findOne({ title: testTitle })
-            const id = blog.get('_id');
-
-            blog.delete();
-
-            chai.assert.equal(Blog.findOne({ _id: id }), undefined);
-        });
-
-        it('Can only be deleted by the blog author', function() {
-            const other_user_id = '87654321';
-            meteorUserStub.returns(other_user_id);
-
-            const blog = Blog.findOne();
-            blog.delete();
-
-            chai.expect(meteorUserStub).to.have.been.called;
-            chai.expect(errorSpy).to.have.been.calledWith("Error deleting blog: only author can delete");
-
-            const stored_blog = Blog.findOne();
-            chai.assert.isDefined(stored_blog);
-        });
-
-        after(function() {
-            meteorUserStub.restore();
-            errorSpy.restore();
-        });
-    });
-
-    describe('#equals', function() {
-        let meteorUserStub;
-
-        before(function() {
-            meteorUserStub = stubUserId();
-        });
-
-        beforeEach(function(done) {
-            Meteor.call('test.resetDatabase', done);
-        });
-
-        it('Returns true if the two blogs are exactly the same', function() {
-            let blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            blog.create();
-
-            const queryBlog = Blog.findOne({ title: testTitle });
-
-            chai.assert.isTrue(queryBlog.equals(queryBlog));
-        });
-
-        it('Returns false if the two blogs are not the same', function() {
-            let blog_a = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            let blog_b = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            blog_a.create();
-            blog_b.create();
-
-            const blogs = Blog.find({ title: testTitle }).fetch();
-            blog_a = blogs[0];
-            blog_b = blogs[1];
-
-            chai.assert.isFalse(blog_a.equals(blog_b));
-        });
-
-        it('Returns false if the object being compared to is not a blog', function() {
-            const blog = new Blog({
-                title: testTitle,
-                body: testBody
-            });
-            const db_blog = blog.create();
-            const pojo = {
-                fake: "true"
-            };
-            chai.assert.isFalse(db_blog.equals(pojo));
-        });
-
-        after(function() {
-            meteorUserStub.restore();
-        });
+    after(function() {
+        meteorUserStub.restore();
     });
 });

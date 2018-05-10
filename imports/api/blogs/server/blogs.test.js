@@ -19,12 +19,12 @@ function spyConsoleError() {
     return sinon.spy(console, 'error');
 }
 
-chai.use(sinonChai);
-
-Meteor.methods({
-    'test.resetDatabase': () => resetDatabase()
-});
-
+before(function() {
+    Meteor.methods({
+        'test.resetDatabase': () => resetDatabase()
+    });
+    chai.use(sinonChai);
+})
 
 describe('Blogs', function() {
     let meteorUserStub;

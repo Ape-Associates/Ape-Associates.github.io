@@ -19,16 +19,21 @@ function spyConsoleError() {
     return sinon.spy(console, 'error');
 }
 
+chai.use(sinonChai);
+
+Meteor.methods({
+    'test.resetDatabase': () => resetDatabase()
+});
+
+
 describe('Blogs', function() {
-    chai.use(sinonChai);
-
-    //TODO: This doesn't need to exist on server tests
-    Meteor.methods({
-        'test.resetDatabase': () => resetDatabase()
-    });
-
+    let meteorUserStub;
     const testTitle = 'Test title';
     const testBody = 'Test body';
+
+    before(function() {
+        meteorUserStub = stubUserId();
+    });
 
     describe('validators', function() {
 
@@ -204,6 +209,10 @@ describe('Blogs', function() {
                     chai.assert.isUndefined(err);
                 });
             });
+        });
+
+        after(function() {
+            meteorUserStub.restore();
         });
     });
 
@@ -445,6 +454,12 @@ describe('Blogs', function() {
     });
 
     describe('#equals', function() {
+        let meteorUserStub;
+
+        before(function() {
+            meteorUserStub = stubUserId();
+        });
+
         beforeEach(function(done) {
             Meteor.call('test.resetDatabase', done);
         });
@@ -490,6 +505,10 @@ describe('Blogs', function() {
                 fake: "true"
             };
             chai.assert.isFalse(db_blog.equals(pojo));
+        });
+
+        after(function() {
+            meteorUserStub.restore();
         });
     });
 });

@@ -52,8 +52,7 @@ export default Blog = Class.create({
         },
 
         create() {
-            //TODO: Use meteor user framework
-            this.author = 'Dummy Author';
+            this.author = Meteor.userId();
             this.createdAt = new Date();
             if (!this.isDraft) {
                 this.isDraft = false;
@@ -61,15 +60,27 @@ export default Blog = Class.create({
             return this.safe_save();
         },
         rename(title) {
-            this.title = title;
-            return this.safe_save();
+            if (this.author == Meteor.userId()) {
+                this.title = title;
+                return this.safe_save();
+            } else {
+                console.error('Error renaming blog: only author can rename');
+            }
         },
         modify(newContent) {
-            this.body = newContent;
-            return this.safe_save();
+            if (this.author == Meteor.userId()) {
+                this.body = newContent;
+                return this.safe_save();
+            } else {
+                console.error('Error modifying blog: only author can modify');
+            }
         },
         delete() {
-            return this.remove();
+            if (this.author == Meteor.userId()) {
+                return this.remove();
+            } else {
+                console.error('Error deleting blog: only author can delete');
+            }
         }
     },
     helpers: {

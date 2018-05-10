@@ -315,6 +315,7 @@ describe('Blogs', function() {
 
                 const stored_blog = Blog.findOne({ _id: id });
                 chai.assert.notEqual(stored_blog.get('title'), newTitle);
+                chai.assert.notEqual(blog.get('title'), newTitle);
             });
 
             after(function() {
@@ -369,6 +370,7 @@ describe('Blogs', function() {
 
                 const stored_blog = Blog.findOne({ _id: id });
                 chai.assert.notEqual(stored_blog.get('body'), newContent);
+                chai.assert.notEqual(blog.get('body'), newContent);
             });
 
             after(function() {

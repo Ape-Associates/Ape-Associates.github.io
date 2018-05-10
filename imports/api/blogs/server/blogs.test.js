@@ -277,7 +277,7 @@ describe('Blogs', function() {
             chai.expect(meteorUserStub).to.have.been.called;
 
             const queryBlog = Blog.findOne({});
-            chai.assert.equal(queryBlog.get('author'), fakeUserId);
+            chai.assert.equal(queryBlog.get('author'), '12345678');
 
         });
 
@@ -392,8 +392,6 @@ describe('Blogs', function() {
 
             const stored_blog = Blog.findOne();
             chai.assert.notEqual(stored_blog.get('body'), newContent);
-
-            meteorUserStub.returns(fakeUserId);
         });
 
         after(function() {
@@ -443,9 +441,7 @@ describe('Blogs', function() {
             chai.expect(errorSpy).to.have.been.calledWith("Error deleting blog: only author can delete");
 
             const stored_blog = Blog.findOne();
-            chai.assert.idDefined(stored_blog);
-
-            meteorUserStub.returns(fakeUserId);
+            chai.assert.isDefined(stored_blog);
         });
 
         after(function() {

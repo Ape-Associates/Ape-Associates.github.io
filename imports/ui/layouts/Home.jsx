@@ -56,8 +56,13 @@ export default class Home extends Component {
             const latest = this.props.latest;
             return (
                 <div>
+                  <div className="blog-title-container">
                     <h2 className="blog-title">{latest.title}</h2>
+                    <span className="blog-date">{latest.createdAt.toString()}</span>
+                  </div>
+                  <div className="blog-body-container">
                     <p className="blog-body">{latest.body}</p>
+                  </div>
                 </div>
             )
         }

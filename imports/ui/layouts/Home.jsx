@@ -53,6 +53,9 @@ export default class Home extends Component {
         if (this.props.loading) {
             return (<p>Loading...</p>)
         } else {
+	    if (!this.props.latest) {
+                return (<p>No posts yet, but stay tuned!</p>)
+	    }
             const latest = this.props.latest;
             return (
                 <div>

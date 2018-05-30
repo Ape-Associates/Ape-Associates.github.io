@@ -25,9 +25,6 @@ export default class BlogInput extends Component {
     }
 
     publishBlog() {
-        console.log(this.state);
-        console.log(this.state.blogTitle);
-        console.log(this.state.blogContent);
         const blog = new Blog({
             title: this.state.blogTitle,
             body: this.state.blogContent
@@ -53,8 +50,8 @@ export default class BlogInput extends Component {
                     <textarea value={this.state.blogContent} onChange={this.handleContentChange.bind(this)} id="blog-body-input" placeholder="Write your blog post here..."></textarea>
                 </div>
                 <div className="blog-input-actions">
-                    <button className="red-button" onClick={this.discardBlog.bind(this)}>Discard</button>
-                    <button className="green-button" onClick={this.publishBlog.bind(this)}>Publish</button>
+                    <button className="button red-button" onClick={this.discardBlog.bind(this)}>Discard</button>
+                    <button className="button green-button" onClick={this.publishBlog.bind(this)}>Publish</button>
                     <button className="button" onClick={this.saveAsDraft.bind(this)}>Save as Draft</button>
                 </div>
             </div>

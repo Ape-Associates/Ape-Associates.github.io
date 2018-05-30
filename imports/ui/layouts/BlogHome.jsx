@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import BlogInput from '../components/BlogInput.jsx';
 
 // BlogHome component - represents the blog part of the website
 export default class BlogHome extends Component {
@@ -7,6 +8,7 @@ export default class BlogHome extends Component {
         return(
             <div className="blog-home">
                 <h1>Blogs</h1>
+                <BlogInput />
             </div>
         );
     }
